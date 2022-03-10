@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdint.h>
 
 #include "defmt.h"
@@ -15,10 +16,26 @@ uint32_t my_logf_string_offset(const char *str) {
     return str - &__start_defmt;
 }
 
-int my_logf(enum log_level level, uint32_t fmt_offset, int nargs, ...) {
+int defmt_printf_like(const char *format, ...) {
     return 0;
 }
 
-int defmt_printf_like(const char *format, ...) {
-    return 0;
+void my_vlog_emit_float(float arg) {
+    printf("emit float: %f\n", arg);
+}
+
+void my_vlog_emit_double(double arg) {
+    printf("emit double: %lf\n", arg);
+}
+
+void my_vlog_emit_string(const char *arg) {
+    printf("emit string: %s\n", arg ? arg : "nil");
+}
+
+void my_vlog_emit_int32_t(int32_t arg) {
+    printf("emit int32: %d\n", arg);
+}
+
+void my_vlog_emit_int64_t(int64_t arg) {
+    printf("emit int64: %ld\n", arg);
 }

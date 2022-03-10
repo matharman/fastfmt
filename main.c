@@ -11,5 +11,7 @@ int main(void) {
     LOG_INF("Info level: %d", LOG_LEVEL_INF);
     LOG_DBG("Debug level: %d", LOG_LEVEL_DBG);
     LOG_TRC("Trace level: %d", LOG_LEVEL_TRC);
+    LOG_INF("Info float: %f", 0.3f);
+
     return 0;
 }
