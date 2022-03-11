@@ -1,13 +1,13 @@
 #ifndef FASTFMT_H
 #define FASTFMT_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 #include "fastfmt_preproc.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define IN_SECTION(_section) __attribute__((section(_section)))
 #define STRINGIFY(_str)      STRINGIFY_(_str)

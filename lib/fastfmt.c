@@ -8,7 +8,7 @@
 static const struct fastfmt_header {
     uint32_t magic;
     uint32_t version;
-} m_header IN_SECTION(".fastfmt.header") = {
+} m_header IN_SECTION(".fastfmt.header") __attribute__((used)) = {
     .magic = 0x4D324D44,
     .version = 0x000001,
 };
@@ -19,6 +19,7 @@ uint32_t fastfmt_string_offset(const char *str) {
 }
 
 int fastfmt_printf_like(const char *format, ...) {
+    (void)format;
     return 0;
 }
 
