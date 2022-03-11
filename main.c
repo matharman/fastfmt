@@ -10,8 +10,13 @@ static void hexdump(const char *tag, const uint8_t *data, size_t len);
 
 int main(void) {
     uint8_t log_out[2048];
-    LOG_ERR("Error level: %d", LOG_LEVEL_ERR);
+
+    LOG_INF("Info no args");
     size_t len = fastfmt_flush_buffer(log_out, sizeof(log_out));
+    hexdump("info no args", log_out, len);
+
+    LOG_ERR("Error level: %d", LOG_LEVEL_ERR);
+    len = fastfmt_flush_buffer(log_out, sizeof(log_out));
     hexdump("error", log_out, len);
 
     LOG_WRN("Warning level: %d", LOG_LEVEL_WRN);
