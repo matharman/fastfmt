@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdint.h>
+#include <string.h>
 
 #include "defmt.h"
 
@@ -21,21 +22,21 @@ int defmt_printf_like(const char *format, ...) {
 }
 
 void my_vlog_emit_float(float arg) {
-    printf("emit float: %f\n", arg);
+    my_vlog_emit_bytes(&arg, sizeof(arg));
 }
 
 void my_vlog_emit_double(double arg) {
-    printf("emit double: %lf\n", arg);
+    my_vlog_emit_bytes(&arg, sizeof(arg));
 }
 
 void my_vlog_emit_string(const char *arg) {
-    printf("emit string: %s\n", arg ? arg : "nil");
+    my_vlog_emit_bytes(arg, strlen(arg));
 }
 
 void my_vlog_emit_int32_t(int32_t arg) {
-    printf("emit int32: %d\n", arg);
+    my_vlog_emit_bytes(&arg, sizeof(arg));
 }
 
 void my_vlog_emit_int64_t(int64_t arg) {
-    printf("emit int64: %ld\n", arg);
+    my_vlog_emit_bytes(&arg, sizeof(arg));
 }

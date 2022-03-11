@@ -7,6 +7,7 @@ extern "C" {
 
 #include <stdint.h>
 #include "preproc.h"
+#include "log_output.h"
 
 #define IN_SECTION(_section) __attribute__((section(_section)))
 #define STRINGIFY(_str)      STRINGIFY_(_str)
@@ -16,7 +17,7 @@ extern "C" {
     IN_SECTION(".defmt.strings")                    \
     static const char _name[] =                     \
         STRINGIFY(_lvl) ";" __FILE__                \
-                        ";" STRINGIFY(__LINE__) ";" STRINGIFY(PP_NARG(__VA_ARGS__)) ";" _fmt "\n"
+                        ";" STRINGIFY(__LINE__) ";" STRINGIFY(PP_NARG(__VA_ARGS__)) ";" _fmt
 
 // For compile-time checks only
 int defmt_printf_like(const char *format, ...) __attribute__((format(printf, 1, 2)));
@@ -50,15 +51,18 @@ void my_vlog_emit_string(const char *arg);
 void my_vlog_emit_int32_t(int32_t arg);
 void my_vlog_emit_int64_t(int64_t arg);
 
-#define LOG_PRIVATE(_lvl, _fmt, ...)                                                 \
-    do {                                                                             \
-        BUILD_FORMAT_STRING(interned_format_string, _lvl, _fmt, ##__VA_ARGS__);      \
-        defmt_printf_like(interned_format_string, ##__VA_ARGS__);                    \
-        if (_lvl <= _private_log_filter) {                                           \
-            uint32_t offset = my_logf_string_offset(&interned_format_string[0]);     \
-            printf("[%c] offset %u nargs %d\n", _lvl, offset, PP_NARG(__VA_ARGS__)); \
-            PP_FOR_EACH(LOG_OUTPUT_ARG, ##__VA_ARGS__);                              \
-        }                                                                            \
+#define LOG_PRIVATE(_lvl, _fmt, ...)                                                   \
+    do {                                                                               \
+        BUILD_FORMAT_STRING(interned_format_string, _lvl, _fmt, ##__VA_ARGS__);        \
+        defmt_printf_like(interned_format_string, ##__VA_ARGS__);                      \
+        if (_lvl <= _private_log_filter) {                                             \
+            my_vlog_start_frame();                                                     \
+            uint32_t offset = my_logf_string_offset(&interned_format_string[0]);       \
+            printf("[%c] offset 0x%X nargs %d\n", _lvl, offset, PP_NARG(__VA_ARGS__)); \
+            my_vlog_emit_int32_t(offset);                                              \
+            PP_FOR_EACH(LOG_OUTPUT_ARG, ##__VA_ARGS__);                                \
+            my_vlog_end_frame();                                                       \
+        }                                                                              \
     } while (0);
 
 #define LOG_ERR(_fmt, ...) LOG_PRIVATE(0, _fmt, ##__VA_ARGS__)

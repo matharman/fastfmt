@@ -1,6 +1,6 @@
 SECTIONS
 {
-    .defmt (INFO):
+    .defmt (INFO): ALIGN(4)
     {
         __start_defmt = .;
         KEEP(*(*.defmt.header))
