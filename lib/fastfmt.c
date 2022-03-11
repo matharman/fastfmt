@@ -43,6 +43,14 @@ void fastfmt_emit_string(const char *arg) {
     fastfmt_emit_bytes(arg, strlen(arg));
 }
 
+void fastfmt_emit_int8_t(int8_t arg) {
+    fastfmt_emit_bytes(&arg, sizeof(arg));
+}
+
+void fastfmt_emit_int16_t(uint16_t arg) {
+    fastfmt_emit_bytes(&arg, sizeof(arg));
+}
+
 void fastfmt_emit_int32_t(int32_t arg) {
     fastfmt_emit_bytes(&arg, sizeof(arg));
 }

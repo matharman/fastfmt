@@ -47,10 +47,14 @@ int fastfmt_printf_like(const char *format, ...) __attribute__((format(printf, 1
             const char *: fastfmt_emit_string, \
             float: fastfmt_emit_float, \
             double: fastfmt_emit_double, \
+            int8_t: fastfmt_emit_int8_t, \
+            uint8_t: fastfmt_emit_int8_t, \
+            int16_t: fastfmt_emit_int16_t, \
+            uint16_t: fastfmt_emit_int16_t, \
+            int32_t: fastfmt_emit_int32_t, \
+            uint32_t: fastfmt_emit_int32_t, \
             int64_t: fastfmt_emit_int64_t, \
             uint64_t: fastfmt_emit_int64_t, \
-            uint32_t: fastfmt_emit_int32_t, \
-            int: fastfmt_emit_int32_t, \
             default: fastfmt_emit_ptr)
 
 #define LOG_OUTPUT_ARG(arg) LOG_SELECT_OUTPUT_FN(arg)(arg)
@@ -67,6 +71,8 @@ void fastfmt_emit_bool(_Bool arg);
 void fastfmt_emit_float(float arg);
 void fastfmt_emit_double(double arg);
 void fastfmt_emit_string(const char *arg);
+void fastfmt_emit_int8_t(int8_t arg);
+void fastfmt_emit_int16_t(uint16_t arg);
 void fastfmt_emit_int32_t(int32_t arg);
 void fastfmt_emit_int64_t(int64_t arg);
 void fastfmt_emit_ptr(const void *arg);
