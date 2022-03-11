@@ -9,16 +9,16 @@
 extern "C" {
 #endif
 
-#define IN_SECTION(_section) __attribute__((section(_section)))
-#define STRINGIFY(_str)      STRINGIFY_(_str)
-#define STRINGIFY_(_str)     #_str
+#define FASTFMT_IN_SECTION(_section) __attribute__((section(_section)))
+#define FASTFMT_STRINGIFY(_str)      FASTFMT_STRINGIFY_(_str)
+#define FASTFMT_STRINGIFY_(_str)     #_str
 
 // clang-format off
-#define BUILD_FORMAT_STRING(_name, _fmt, ...) \
-IN_SECTION(".fastfmt.strings") static const char _name[] = \
+#define FASTFMT_BUILD_FORMAT_STRING(_name, _fmt, ...) \
+FASTFMT_IN_SECTION(".fastfmt.strings") static const char _name[] = \
        "{\"filename\":\"" __FILE__ "\"," \
-       "\"lineNumber\":" STRINGIFY(__LINE__) "," \
-       "\"argCount\":" STRINGIFY(PP_NARG(__VA_ARGS__)) "," \
+       "\"lineNumber\":" FASTFMT_STRINGIFY(__LINE__) "," \
+       "\"argCount\":" FASTFMT_STRINGIFY(FASTFMT_PP_NARG(__VA_ARGS__)) "," \
        "\"formatString\":\"" _fmt "\"" \
        "}"
 // clang-format on
@@ -81,20 +81,18 @@ void fastfmt_emit_int64_t(int64_t arg);
 
 // Always generate the format string for the metadata section -- no runtime overhead.
 // Don't generate code for the log emission if it can be avoided.
-#define _LOG_PRIVATE(_lvl, _fmt, ...)                                              \
-    do {                                                                           \
-        BUILD_FORMAT_STRING(interned_format_string, _fmt, ##__VA_ARGS__);          \
-        fastfmt_printf_like(interned_format_string, ##__VA_ARGS__);                \
-        if (_lvl <= __log_filter) {                                                \
-            fastfmt_start_frame();                                                 \
-            fastfmt_emit_log_level(LOG_LEVEL_TO_CHAR(_lvl));                       \
-            uint32_t offset = fastfmt_string_offset(&interned_format_string[0]);   \
-            printf("[%c] offset 0x%X nargs %d\n", LOG_LEVEL_TO_CHAR(_lvl), offset, \
-                   PP_NARG(__VA_ARGS__));                                          \
-            fastfmt_emit_int32_t(offset);                                          \
-            PP_FOR_EACH(LOG_OUTPUT_ARG, ##__VA_ARGS__);                            \
-            fastfmt_end_frame();                                                   \
-        }                                                                          \
+#define _LOG_PRIVATE(_lvl, _fmt, ...)                                             \
+    do {                                                                          \
+        FASTFMT_BUILD_FORMAT_STRING(interned_format_string, _fmt, ##__VA_ARGS__); \
+        fastfmt_printf_like(interned_format_string, ##__VA_ARGS__);               \
+        if (_lvl <= __log_filter) {                                               \
+            fastfmt_start_frame();                                                \
+            fastfmt_emit_log_level(LOG_LEVEL_TO_CHAR(_lvl));                      \
+            uint32_t offset = fastfmt_string_offset(&interned_format_string[0]);  \
+            fastfmt_emit_int32_t(offset);                                         \
+            FASTFMT_PP_FOR_EACH(LOG_OUTPUT_ARG, ##__VA_ARGS__);                   \
+            fastfmt_end_frame();                                                  \
+        }                                                                         \
     } while (0)
 
 #define LOG_ERR(_fmt, ...) _LOG_PRIVATE(LOG_LEVEL_ERR, _fmt, ##__VA_ARGS__)

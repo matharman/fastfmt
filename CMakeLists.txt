@@ -15,3 +15,7 @@ target_link_options(fastfmt_sink_ex PRIVATE -Wl,-T,${CMAKE_CURRENT_LIST_DIR}/fas
 
 add_custom_command(TARGET fastfmt_sink_ex POST_BUILD
     COMMAND ${CMAKE_OBJCOPY} ARGS --dump-section .fastfmt=${CMAKE_CURRENT_BINARY_DIR}/fastfmt_strings ${CMAKE_CURRENT_BINARY_DIR}/fastfmt_sink_ex)
+
+if(BUILD_TESTING)
+    enable_testing()
+endif()
