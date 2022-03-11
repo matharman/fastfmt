@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 project(fastfmt C CXX)
 
-add_subdirectory(../rzcobs-c rzcobs_bin)
+add_subdirectory(lib/rzcobs)
 
 add_library(fastfmt STATIC lib/fastfmt.c)
 target_link_libraries(fastfmt PRIVATE rzcobs)
