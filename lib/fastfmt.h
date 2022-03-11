@@ -42,6 +42,7 @@ int fastfmt_printf_like(const char *format, ...) __attribute__((format(printf, 1
 
 #define LOG_SELECT_OUTPUT_FN(arg) \
     _Generic((arg), \
+            _Bool: fastfmt_emit_bool, \
             char *: fastfmt_emit_string, \
             const char *: fastfmt_emit_string, \
             float: fastfmt_emit_float, \
@@ -62,6 +63,7 @@ int fastfmt_end_frame(void);
 int fastfmt_emit_bytes(const void *data, size_t len);
 
 void fastfmt_emit_log_level(char lvl);
+void fastfmt_emit_bool(_Bool arg);
 void fastfmt_emit_float(float arg);
 void fastfmt_emit_double(double arg);
 void fastfmt_emit_string(const char *arg);

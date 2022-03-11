@@ -27,6 +27,10 @@ void fastfmt_emit_log_level(char lvl) {
     fastfmt_emit_bytes(&lvl, sizeof(lvl));
 }
 
+void fastfmt_emit_bool(_Bool arg) {
+    fastfmt_emit_bytes(&arg, sizeof(arg));
+}
+
 void fastfmt_emit_float(float arg) {
     fastfmt_emit_bytes(&arg, sizeof(arg));
 }
