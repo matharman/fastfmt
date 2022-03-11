@@ -6,7 +6,7 @@ add_subdirectory(lib/rzcobs)
 add_library(fastfmt STATIC lib/fastfmt.c)
 target_link_libraries(fastfmt PRIVATE rzcobs)
 target_include_directories(fastfmt PUBLIC lib)
-target_compile_options(fastfmt PRIVATE -Wall -Wextra -Wpedantic -Werror -std=gnu11)
+target_compile_options(fastfmt PRIVATE -Wall -Wextra -Werror -std=gnu11)
 
 add_executable(fastfmt_sink_ex main.c)
 target_compile_options(fastfmt_sink_ex PRIVATE -fmacro-prefix-map=${CMAKE_SOURCE_DIR}=FASTFMT_SINK)

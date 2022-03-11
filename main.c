@@ -39,6 +39,11 @@ int main(void) {
     len = fastfmt_flush_buffer(log_out, sizeof(log_out));
     hexdump("info float", log_out, len);
 
+    char *world = (char *)"world";
+    LOG_INF("Info many args %s %s %f %lf %lu %p", world, "hello", 0.3f, 0.6, UINT64_MAX, &world);
+    len = fastfmt_flush_buffer(log_out, sizeof(log_out));
+    hexdump("info many args", log_out, len);
+
     return 0;
 }
 

@@ -47,6 +47,11 @@ void fastfmt_emit_int64_t(int64_t arg) {
     fastfmt_emit_bytes(&arg, sizeof(arg));
 }
 
+void fastfmt_emit_ptr(const void *arg) {
+    uintptr_t data = (uintptr_t)arg;
+    fastfmt_emit_bytes(&data, sizeof(data));
+}
+
 static RZCobWriter writer;
 
 int fastfmt_start_frame(void) {
@@ -64,3 +69,7 @@ int fastfmt_emit_bytes(const void *data, size_t len) {
 void fastfmt_init_sink(fastfmt_bytesink callback, void *context) {
     rzcob_writer_init(&writer, callback, context);
 }
+
+_Static_assert(FASTFMT_PP_NARG() == 0, "PP_NARG match fail");
+_Static_assert(FASTFMT_PP_NARG(1) == 1, "PP_NARG match fail");
+_Static_assert(FASTFMT_PP_NARG(1, 2, 3, 4, 5) == 5, "PP_NARG match fail");
