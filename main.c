@@ -3,7 +3,7 @@
 #include <stdint.h>
 
 #include "fastfmt.h"
-LOG_MODULE_REGISTER(main, LOG_LEVEL_INF);
+FASTFMT_LOG_LEVEL_SET(FF_LOG_LEVEL_INF);
 
 static size_t fastfmt_flush_buffer(void *dest, size_t len);
 static void hexdump(const char *tag, const uint8_t *data, size_t len);
@@ -11,36 +11,37 @@ static void hexdump(const char *tag, const uint8_t *data, size_t len);
 int main(void) {
     uint8_t log_out[2048];
 
-    LOG_INF("Info no args");
+    FASTFMT_LOG_INF("Info no args");
     size_t len = fastfmt_flush_buffer(log_out, sizeof(log_out));
     hexdump("info no args", log_out, len);
 
-    LOG_ERR("Error level: %d", LOG_LEVEL_ERR);
+    FASTFMT_LOG_ERR("Error level: %d", FF_LOG_LEVEL_ERR);
     len = fastfmt_flush_buffer(log_out, sizeof(log_out));
     hexdump("error", log_out, len);
 
-    LOG_WRN("Warning level: %d", LOG_LEVEL_WRN);
+    FASTFMT_LOG_WRN("Warning level: %d", FF_LOG_LEVEL_WRN);
     len = fastfmt_flush_buffer(log_out, sizeof(log_out));
     hexdump("warning", log_out, len);
 
-    LOG_INF("Info level: %d", LOG_LEVEL_INF);
+    FASTFMT_LOG_INF("Info level: %d", FF_LOG_LEVEL_INF);
     len = fastfmt_flush_buffer(log_out, sizeof(log_out));
     hexdump("info", log_out, len);
 
-    LOG_DBG("Debug level: %d", LOG_LEVEL_DBG);
+    FASTFMT_LOG_DBG("Debug level: %d", FF_LOG_LEVEL_DBG);
     len = fastfmt_flush_buffer(log_out, sizeof(log_out));
     hexdump("debug", log_out, len);
 
-    LOG_TRC("Trace level: %d", LOG_LEVEL_TRC);
+    FASTFMT_LOG_TRC("Trace level: %d", FF_LOG_LEVEL_TRC);
     len = fastfmt_flush_buffer(log_out, sizeof(log_out));
     hexdump("trace", log_out, len);
 
-    LOG_INF("Info float: %f", 0.3f);
+    FASTFMT_LOG_INF("Info float: %f", 0.3f);
     len = fastfmt_flush_buffer(log_out, sizeof(log_out));
     hexdump("info float", log_out, len);
 
     char *world = (char *)"world";
-    LOG_INF("Info many args %s %s %f %lf %lu %p", world, "hello", 0.3f, 0.6, UINT64_MAX, &world);
+    FASTFMT_LOG_INF("Info many args %s %s %f %lf %lu %p", world, "hello", 0.3f, 0.6, UINT64_MAX,
+                    &world);
     len = fastfmt_flush_buffer(log_out, sizeof(log_out));
     hexdump("info many args", log_out, len);
 
