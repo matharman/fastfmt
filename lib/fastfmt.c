@@ -40,7 +40,12 @@ void fastfmt_emit_double(double arg) {
 }
 
 void fastfmt_emit_string(const char *arg) {
+    // TODO prefix for string
     fastfmt_emit_bytes(arg, strlen(arg));
+}
+
+void fastfmt_emit_long(long arg) {
+    fastfmt_emit_bytes(&arg, sizeof(arg));
 }
 
 void fastfmt_emit_int8_t(int8_t arg) {
