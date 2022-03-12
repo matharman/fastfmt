@@ -55,6 +55,8 @@ int fastfmt_printf_like(const char *format, ...) __attribute__((format(printf, 1
             unsigned int: fastfmt_emit_int32_t, \
             long: fastfmt_emit_int64_t, \
             unsigned long: fastfmt_emit_int64_t, \
+            long long: fastfmt_emit_int64_t, \
+            unsigned long long: fastfmt_emit_int64_t, \
             default: fastfmt_emit_ptr)
 
 #define LOG_OUTPUT_ARG(arg) LOG_SELECT_OUTPUT_FN(arg)(arg)
