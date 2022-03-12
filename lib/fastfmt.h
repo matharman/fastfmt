@@ -39,7 +39,7 @@ int fastfmt_printf_like(const char *format, ...) __attribute__((format(printf, 1
 #define FASTFMT_LOG_SELECT_OUTPUT_DEFAULT(arg) fastfmt_emit_int32_t((int32_t)(arg))
 
 #define FASTFMT_LOG_SELECT_OUTPUT_FN(arg) \
-    _Generic((arg), \
+    _Generic((arg) + 0, \
             _Bool: fastfmt_emit_bool, \
             char *: fastfmt_emit_string, \
             const char *: fastfmt_emit_string, \
