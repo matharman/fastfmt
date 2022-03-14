@@ -14,18 +14,28 @@ extern "C" {
 #define FASTFMT_STRINGIFY(_str)      FASTFMT_STRINGIFY_(_str)
 #define FASTFMT_STRINGIFY_(_str)     #_str
 
+#define FASTFMT_UNIQUE_SECTION ".fastfmt.strings." __FILE__ "." FASTFMT_STRINGIFY(__LINE__)
+
+#if 0
 // clang-format off
 #define FASTFMT_BUILD_FORMAT_STRING(_name, _fmt, ...) \
-FASTFMT_IN_SECTION(".fastfmt.strings") static const char _name[] = \
+       static const char _name[] FASTFMT_IN_SECTION(FASTFMT_UNIQUE_SECTION) __attribute__((unused)) = \
        "{\"filename\":\"" __FILE__ "\"," \
        "\"lineNumber\":" FASTFMT_STRINGIFY(__LINE__) "," \
        "\"argCount\":" FASTFMT_STRINGIFY(FASTFMT_PP_NARG(__VA_ARGS__)) "," \
        "\"formatString\":\"" _fmt "\"" \
        "}"
 // clang-format on
+#else
+    #define FASTFMT_BUILD_FORMAT_STRING(_name, _fmt, ...)                           \
+        static const char _name[] FASTFMT_IN_SECTION(FASTFMT_UNIQUE_SECTION)        \
+            __attribute__((unused)) = "##FASTFMT##" __FILE__ ";" FASTFMT_STRINGIFY( \
+                __LINE__) ";" FASTFMT_STRINGIFY(FASTFMT_PP_NARG(__VA_ARGS__)) ";"   \
+                                                                              "\"" _fmt "\""
+#endif
 
 // For compile-time checks only
-int fastfmt_printf_like(const char *format, ...) __attribute__((format(printf, 1, 2)));
+// int fastfmt_printf_like(const char *format, ...) __attribute__((format(printf, 1, 2)));
 
 #define FF_LOG_LEVEL_OFF 0
 #define FF_LOG_LEVEL_ERR 1
@@ -34,9 +44,7 @@ int fastfmt_printf_like(const char *format, ...) __attribute__((format(printf, 1
 #define FF_LOG_LEVEL_DBG 4
 #define FF_LOG_LEVEL_TRC 5
 
-#define FASTFMT_LOG_LEVEL_SET(_lvl) static const uint8_t __log_filter __attribute__((unused)) = _lvl
-
-#define FASTFMT_LOG_SELECT_OUTPUT_DEFAULT(arg) fastfmt_emit_int32_t((int32_t)(arg))
+#define FASTFMT_LOG_LEVEL_SET(_lvl) static const char __log_filter __attribute__((unused)) = _lvl
 
 #define FASTFMT_LOG_SELECT_OUTPUT_FN(arg) \
     _Generic((arg) + 0, \
@@ -55,7 +63,8 @@ int fastfmt_printf_like(const char *format, ...) __attribute__((format(printf, 1
             unsigned long: fastfmt_emit_int64_t, \
             long long: fastfmt_emit_int64_t, \
             unsigned long long: fastfmt_emit_int64_t, \
-            default: fastfmt_emit_ptr)
+            void *: fastfmt_emit_ptr, \
+	    default: fastfmt_emit_ptr)
 
 #define FASTFMT_LOG_OUTPUT_ARG(arg) FASTFMT_LOG_SELECT_OUTPUT_FN(arg)(arg)
 
@@ -99,7 +108,7 @@ void fastfmt_emit_ptr(const void *arg);
 #define _FASTFMT_LOG_EMIT_ARGS(_lvl, _fmt, ...)                         \
     do {                                                                \
         FASTFMT_BUILD_FORMAT_STRING(interned_fmt, _fmt, __VA_ARGS__);   \
-        fastfmt_printf_like(interned_fmt, ##__VA_ARGS__);               \
+        /*(void)fastfmt_printf_like(_fmt, ##__VA_ARGS__);*/             \
         if (_lvl <= __log_filter) {                                     \
             fastfmt_start_frame();                                      \
             fastfmt_emit_log_level(FASTFMT_LOG_LEVEL_TO_CHAR(_lvl));    \
@@ -112,7 +121,7 @@ void fastfmt_emit_ptr(const void *arg);
 #define _FASTFMT_LOG_EMIT_0(_lvl, _fmt, ...)                           \
     do {                                                               \
         FASTFMT_BUILD_FORMAT_STRING(interned_fmt, _fmt, __VA_ARGS__);  \
-        fastfmt_printf_like(interned_fmt, ##__VA_ARGS__);              \
+        /*(void)fastfmt_printf_like(_fmt, ##__VA_ARGS__);*/            \
         if (_lvl <= __log_filter) {                                    \
             fastfmt_start_frame();                                     \
             fastfmt_emit_log_level(FASTFMT_LOG_LEVEL_TO_CHAR(_lvl));   \

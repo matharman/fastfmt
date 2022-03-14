@@ -55,7 +55,11 @@ int rzcob_write(RZCobWriter *w, const void *buf, size_t len) {
 }
 
 static inline int rzcob_buffer_put(RZCobWriter *w, uint8_t b) {
-    return w->sink(w->sink_context, &b, 1);
+    if (w->sink) {
+        return w->sink(w->sink_context, &b, 1);
+    }
+
+    return -1;
 }
 
 static int rzcob_write_byte(RZCobWriter *w, uint8_t byte) {
