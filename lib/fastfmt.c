@@ -18,11 +18,6 @@ uint32_t fastfmt_string_offset(const char *str) {
     return str - &__start_fastfmt;
 }
 
-int fastfmt_printf_like(const char *format, ...) {
-    (void)format;
-    return 0;
-}
-
 void fastfmt_emit_log_level(char lvl) {
     fastfmt_emit_bytes(&lvl, sizeof(lvl));
 }

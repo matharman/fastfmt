@@ -27,15 +27,21 @@ extern "C" {
        "}"
 // clang-format on
 #else
-    #define FASTFMT_BUILD_FORMAT_STRING(_name, _fmt, ...)                           \
-        static const char _name[] FASTFMT_IN_SECTION(FASTFMT_UNIQUE_SECTION)        \
-            __attribute__((unused)) = "##FASTFMT##" __FILE__ ";" FASTFMT_STRINGIFY( \
-                __LINE__) ";" FASTFMT_STRINGIFY(FASTFMT_PP_NARG(__VA_ARGS__)) ";"   \
+    #define FASTFMT_BUILD_FORMAT_STRING(_name, _fmt, _nargs)                      \
+        static const char _name[] FASTFMT_IN_SECTION(FASTFMT_UNIQUE_SECTION)      \
+            __attribute__((unused)) =                                             \
+                "##FASTFMT##" __FILE__                                            \
+                ";" FASTFMT_STRINGIFY(__LINE__) ";" FASTFMT_STRINGIFY(_nargs) ";" \
                                                                               "\"" _fmt "\""
 #endif
 
 // For compile-time checks only
-// int fastfmt_printf_like(const char *format, ...) __attribute__((format(printf, 1, 2)));
+static inline int fastfmt_printf_like(const char *format, ...)
+    __attribute__((format(printf, 1, 2)));
+
+static inline int fastfmt_printf_like(const char *format, ...) {
+    return 0;
+}
 
 #define FF_LOG_LEVEL_OFF 0
 #define FF_LOG_LEVEL_ERR 1
@@ -105,29 +111,29 @@ void fastfmt_emit_ptr(const void *arg);
         __ll2ch_char;                                 \
     })
 
-#define _FASTFMT_LOG_EMIT_ARGS(_lvl, _fmt, ...)                         \
-    do {                                                                \
-        FASTFMT_BUILD_FORMAT_STRING(interned_fmt, _fmt, __VA_ARGS__);   \
-        /*(void)fastfmt_printf_like(_fmt, ##__VA_ARGS__);*/             \
-        if (_lvl <= __log_filter) {                                     \
-            fastfmt_start_frame();                                      \
-            fastfmt_emit_log_level(FASTFMT_LOG_LEVEL_TO_CHAR(_lvl));    \
-            fastfmt_emit_int32_t(fastfmt_string_offset(interned_fmt));  \
-            FASTFMT_PP_FOR_EACH(FASTFMT_LOG_OUTPUT_ARG, ##__VA_ARGS__); \
-            fastfmt_end_frame();                                        \
-        }                                                               \
+#define _FASTFMT_LOG_EMIT_ARGS(_lvl, _fmt, ...)                                        \
+    do {                                                                               \
+        FASTFMT_BUILD_FORMAT_STRING(interned_fmt, _fmt, FASTFMT_PP_NARG(__VA_ARGS__)); \
+        (void)fastfmt_printf_like(_fmt, ##__VA_ARGS__);                                \
+        if (_lvl <= __log_filter) {                                                    \
+            fastfmt_start_frame();                                                     \
+            fastfmt_emit_log_level(FASTFMT_LOG_LEVEL_TO_CHAR(_lvl));                   \
+            fastfmt_emit_int32_t(fastfmt_string_offset(interned_fmt));                 \
+            FASTFMT_PP_FOR_EACH(FASTFMT_LOG_OUTPUT_ARG, ##__VA_ARGS__);                \
+            fastfmt_end_frame();                                                       \
+        }                                                                              \
     } while (0)
 
-#define _FASTFMT_LOG_EMIT_0(_lvl, _fmt, ...)                           \
-    do {                                                               \
-        FASTFMT_BUILD_FORMAT_STRING(interned_fmt, _fmt, __VA_ARGS__);  \
-        /*(void)fastfmt_printf_like(_fmt, ##__VA_ARGS__);*/            \
-        if (_lvl <= __log_filter) {                                    \
-            fastfmt_start_frame();                                     \
-            fastfmt_emit_log_level(FASTFMT_LOG_LEVEL_TO_CHAR(_lvl));   \
-            fastfmt_emit_int32_t(fastfmt_string_offset(interned_fmt)); \
-            fastfmt_end_frame();                                       \
-        }                                                              \
+#define _FASTFMT_LOG_EMIT_0(_lvl, _fmt, ...)                                           \
+    do {                                                                               \
+        FASTFMT_BUILD_FORMAT_STRING(interned_fmt, _fmt, FASTFMT_PP_NARG(__VA_ARGS__)); \
+        (void)fastfmt_printf_like(_fmt, ##__VA_ARGS__);                                \
+        if (_lvl <= __log_filter) {                                                    \
+            fastfmt_start_frame();                                                     \
+            fastfmt_emit_log_level(FASTFMT_LOG_LEVEL_TO_CHAR(_lvl));                   \
+            fastfmt_emit_int32_t(fastfmt_string_offset(interned_fmt));                 \
+            fastfmt_end_frame();                                                       \
+        }                                                                              \
     } while (0)
 
 #define _FASTFMT_LOG_NARGS_POSTFIX_IMPL(_ignored, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, \
