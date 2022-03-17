@@ -40,6 +40,7 @@ static inline int fastfmt_printf_like(const char *format, ...)
     __attribute__((format(printf, 1, 2)));
 
 static inline int fastfmt_printf_like(const char *format, ...) {
+    (void)format;
     return 0;
 }
 
